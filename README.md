@@ -11,14 +11,36 @@ This project introduces a web application which operates as social network for c
   - As a authenticated user I want to recieve new poost from users I followed at my news feed.
   - As a authenticated user I want to follow another users.
   - As a authenticated user I want to logout.
-  - As a authenticated user I want to leave a comment under the post.
   - As a authenticated user I want to leave a reation under the post.
+  - As a authenticated user I want to leave comments under the post.
 
 ### Functional groups
 
   - Authentication
+      - [ ] Users crud
+      - [ ] Jwt generation and validation
+      - [ ] Users endpoints
+      - [ ] Frontend login, register pages
+      - [ ] Link backend and frontend
   - Profile
+      - [ ] Posts psql crud
+      - [ ] Post's image links
+      - [ ] Posts endpoints
+      - [ ] Frontend profile page
+      - [ ] Link backend and frontend
   - News feed
+      - [ ] Configure Redis and create PostgreSQL query
+      - [ ] News feed endpoint
+      - [ ] Frontend news feed page
+      - [ ] Link backend and frontend
   - Comments and reactions
+      - [ ] Create comment's and reaction's cruds
+      - [ ] Create backend endponts
+      - [ ] Frontend features
+      - [ ] Link backend and frontend
 
 This order is most appropriate to make the smallest tunes at every module while developing.
+
+### Architecture
+
+![Architecture. Every instance is containerized in Docker](/docs/architecture.png)
