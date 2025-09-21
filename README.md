@@ -20,3 +20,5 @@ This project introduces a web application which operates as social network for c
   - Profile
   - News feed
   - Comments and reactions
+
+This order is most appropriate to make the smallest tunes at every module while developing.
