@@ -8,7 +8,7 @@ This project introduces a web application which operates as social network for c
   - As a user I want to register new account.
   - As a registered user I want to sign in.
   - As a authenticated user I want to create a new post with[out] image.
-  - As a authenticated user I want to recieve new poost from users I followed at my news feed.
+  - As a authenticated user I want to recieve new post from users I followed at my news feed.
   - As a authenticated user I want to follow another users.
   - As a authenticated user I want to logout.
   - As a authenticated user I want to leave a reation under the post.
