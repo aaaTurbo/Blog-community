@@ -1,0 +1,78 @@
+services:
+
+  gateway:
+    image: nginx:alpine
+    container_name: gateway
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - auth-server
+      - app-server
+      - frontend
+    networks:
+      - dev-net
+
+  auth-server:
+    build:
+      context: ./backend/auth-server
+      dockerfile: Dockerfile
+    container_name: auth-service
+    platform: linux/amd64
+    depends_on:
+      - postgres-auth
+    networks:
+      - dev-net
+      - postgres-auth
+
+  app-server:
+    build:
+      context: ./backend/app-server
+      dockerfile: Dockerfile
+    container_name: app-service
+    platform: linux/amd64
+    depends_on:
+      - postgres-app
+    networks:
+      - dev-net
+      - postgres-app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - dev-net
+
+  postgres-auth:
+    image: postgres
+    environment:
+      POSTGRES_DB: auth
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - postgres-auth
+
+  postgres-app:
+    image: postgres
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - postgres-app
+
+networks:
+  dev-net:
+    driver: bridge
+
+  postgres-app:
+    driver: bridge
+
+  postgres-auth:
+    driver: bridge
