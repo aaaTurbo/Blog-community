@@ -4,6 +4,7 @@ import {Button} from "./components/ui/button";
 import {NuqsAdapter} from 'nuqs/adapters/react-router/v7'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import About from "@/pages/About.tsx";
+import {ProtectedLayout} from "@/layout/ProtectedLayout.tsx";
 
 function App() {
     return (
@@ -19,12 +20,18 @@ function App() {
                             }
                         },
                         {
-                            path: "/about",
-                            element: <About></About>,
-                            loader: () => {
-                                return "testData"
-                            }
-                        }
+                            Component: ProtectedLayout,
+                            children: [
+                                {
+                                    path: "/about",
+                                    element: <About></About>,
+                                    loader: () => {
+                                        return "testData"
+                                    }
+                                }
+                            ]
+                        },
+
                     ])
                 }>
                 </RouterProvider>
