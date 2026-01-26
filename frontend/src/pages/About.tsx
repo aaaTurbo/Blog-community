@@ -1,5 +1,4 @@
 import {parseAsString, useQueryState} from "nuqs";
-import axios from "axios";
 import {useEffect, useState} from "react";
 import z from "zod";
 import {useForm} from "react-hook-form";
@@ -7,11 +6,10 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
+import {api} from "@/api/apiClient.ts";
 
 
-const api = axios.create({
-    baseURL: "http://localhost:5000",
-})
+
 
 const schema = z.object({
     pizda: z.string().min(3, "ebaniy rot oshibka")
@@ -45,6 +43,7 @@ export default function About() {
     const onError = (error: any) => {
         console.log(error);
     }
+
     return (
         <div>
             <Form {...form}>
