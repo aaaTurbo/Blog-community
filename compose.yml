@@ -51,8 +51,9 @@ services:
 
   postgres-auth:
     image: postgres
+    container_name: pg-auth
     environment:
-      POSTGRES_DB: auth
+      POSTGRES_DB: authdb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     networks:
