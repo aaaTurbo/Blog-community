@@ -17,9 +17,9 @@ This project introduces a web application which operates as social network for c
 ### Functional groups
 
   - Authentication
-      - [ ] Users crud
-      - [ ] Jwt generation and validation
-      - [ ] Users endpoints
+      - [x] Users crud
+      - [x] Jwt generation and validation
+      - [x] Users endpoints
       - [ ] Frontend login, register pages
       - [ ] Link backend and frontend
   - Profile
