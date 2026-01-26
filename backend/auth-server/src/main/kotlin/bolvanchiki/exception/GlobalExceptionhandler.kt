@@ -76,11 +76,11 @@ class GlobalExceptionHandler {
     ): ResponseEntity<ErrorResponse> {
         println(e::class.toString() + " : " + e.message)
         val errorResponse = ErrorResponse(
-            status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            status = HttpStatus.BAD_REQUEST.value(),
             error = "Internal Server Error",
             message = e.message ?: "Internal Server Error",
             path = request.servletPath
         )
-        return ResponseEntity(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
     }
 }
