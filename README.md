@@ -20,24 +20,24 @@ This project introduces a web application which operates as social network for c
       - [x] Users crud
       - [x] Jwt generation and validation
       - [x] Users endpoints
-      - [ ] Frontend login, register pages
-      - [ ] Link backend and frontend
+      - [x] Frontend login, register pages
+      - [x] Link backend and frontend
   - Profile
       - [x] Posts psql crud
       - [x] Post's image links
       - [x] Post's endpoints
-      - [ ] Frontend profile page
-      - [ ] Link backend and frontend
+      - [x] Frontend profile page
+      - [x] Link backend and frontend
   - News feed
       - [x] Configure Redis and create PostgreSQL query
       - [x] News feed endpoint
-      - [ ] Frontend news feed page
-      - [ ] Link backend and frontend
+      - [x] Frontend news feed page
+      - [x] Link backend and frontend
   - Comments and reactions
       - [x] Create comment's and reaction's cruds
       - [x] Create backend endponts
-      - [ ] Frontend features
-      - [ ] Link backend and frontend
+      - [x] Frontend features
+      - [x] Link backend and frontend
 
 This order is most appropriate to make the smallest tunes at every module while developing.
 
