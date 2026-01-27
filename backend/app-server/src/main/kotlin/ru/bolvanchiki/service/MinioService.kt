@@ -5,11 +5,13 @@ import io.minio.MakeBucketArgs
 import io.minio.MinioClient
 import io.minio.PutObjectArgs
 import io.minio.RemoveObjectArgs
+import io.minio.SetBucketPolicyArgs
 import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
+import kotlin.math.log
 
 @Service
 class MinioService(
@@ -22,9 +24,15 @@ class MinioService(
     @Value("\${app.minio.endpoint}")
     private lateinit var endpoint: String
 
+    @Value("\${app.minio.public-access:false}")
+    private val publicAccess: Boolean = false
+
     @PostConstruct
     fun init() {
         createBucketIfNotExists()
+        if (publicAccess) {
+            setPublicReadAccess()
+        }
     }
 
     private fun createBucketIfNotExists() {
@@ -46,6 +54,40 @@ class MinioService(
             throw RuntimeException("Failed to create MinIO bucket", e)
         }
     }
+
+    private fun setPublicReadAccess() {
+        try {
+            val policyJson = """
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": "*",
+                        "Action": [
+                            "s3:GetObject"
+                        ],
+                        "Resource": [
+                            "arn:aws:s3:::${bucketName}/*"
+                        ]
+                    }
+                ]
+            }
+            """.trimIndent()
+
+            minioClient.setBucketPolicy(
+                SetBucketPolicyArgs.builder()
+                    .bucket(bucketName)
+                    .config(policyJson)
+                    .build()
+            )
+
+            println("✅ Public read access enabled for bucket: $bucketName")
+        } catch (e: Exception) {
+            println("⚠️ Could not set public access policy: ${e.message}")
+        }
+    }
+
 
     fun uploadImage(userId: String, file: MultipartFile): String {
         validateImage(file)
@@ -85,7 +127,7 @@ class MinioService(
     }
 
     fun getImageUrl(imageKey: String): String {
-        return "$endpoint/$bucketName/$imageKey"
+        return "storage/$imageKey"
     }
 
     private fun validateImage(file: MultipartFile) {

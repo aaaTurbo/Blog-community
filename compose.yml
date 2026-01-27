@@ -11,7 +11,9 @@ services:
       - auth-server
       - app-server
       - frontend
+      - minio
     networks:
+      - minio-net
       - dev-net
 
   auth-server:
