@@ -17,25 +17,25 @@ This project introduces a web application which operates as social network for c
 ### Functional groups
 
   - Authentication
-      - [ ] Users crud
-      - [ ] Jwt generation and validation
-      - [ ] Users endpoints
+      - [x] Users crud
+      - [x] Jwt generation and validation
+      - [x] Users endpoints
       - [ ] Frontend login, register pages
       - [ ] Link backend and frontend
   - Profile
-      - [ ] Posts psql crud
-      - [ ] Post's image links
-      - [ ] Posts endpoints
+      - [x] Posts psql crud
+      - [x] Post's image links
+      - [x] Post's endpoints
       - [ ] Frontend profile page
       - [ ] Link backend and frontend
   - News feed
-      - [ ] Configure Redis and create PostgreSQL query
-      - [ ] News feed endpoint
+      - [x] Configure Redis and create PostgreSQL query
+      - [x] News feed endpoint
       - [ ] Frontend news feed page
       - [ ] Link backend and frontend
   - Comments and reactions
-      - [ ] Create comment's and reaction's cruds
-      - [ ] Create backend endponts
+      - [x] Create comment's and reaction's cruds
+      - [x] Create backend endponts
       - [ ] Frontend features
       - [ ] Link backend and frontend
 
