@@ -25,7 +25,7 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
-            .cors { it.configurationSource(corsConfigurationSource()) }
+            .cors { it.disable() }
             .csrf { it.disable() }
             .logout { it.disable() }
             .sessionManagement {
@@ -33,6 +33,7 @@ class SecurityConfig(
             }
             .authorizeHttpRequests { requests ->
                 requests
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/register", "/login", "/refresh").permitAll()
                     .requestMatchers(HttpMethod.GET, "/users/{username}", "/validate").permitAll()
                     .anyRequest().authenticated()
@@ -47,9 +48,12 @@ class SecurityConfig(
         return BCryptPasswordEncoder()
     }
 
-    @Bean
+
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
+        configuration.allowedOriginPatterns = listOf(
+            "http://localhost:*", "http://frontend:*"
+        )
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true

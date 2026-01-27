@@ -6,14 +6,20 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import z from "zod";
 import {login} from "@/api/requests.ts";
 import {Link, useNavigate} from "react-router-dom";
+import {useAuthStore} from "@/store/authStore.ts";
+import {useState} from "react";
+import {LoadingSpinner} from "@/components/LoadingSpinner.tsx";
 
 
 export default function AuthorizationPage() {
 
     const navigate = useNavigate();
+    const setTokens = useAuthStore((state) => state.setTokens);
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const schema = z.object({
-        login: z.email().min(3, "minimum 3 symbols"),
+        login: z.string().email("Enter valid email").min(3, "minimum 3 symbols"),
         password: z.string().min(3, "minimum 3 symbols")
     })
 
@@ -23,21 +29,28 @@ export default function AuthorizationPage() {
         resolver: zodResolver(schema)
     });
 
-    const onSubmit = (data: Schema) => {
-        login(data.login, data.password).then(r => {
-                console.log(r);
-                if (r.status === 200) {
-                    navigate("/")
-                }
+    const onSubmit = async (data: Schema) => {
+        setIsLoading(true);
+        setErrorMessage(null);
+        try {
+            const response = await login(data.login, data.password);
+            if (response.status === 200 && response.data) {
+                const { tokens } = response.data;
+                setTokens(tokens.token, tokens.refreshToken);
+                navigate("/");
             }
-        );
+        } catch (error: any) {
+            console.error("Login error:", error);
+            const errorMsg = error.response?.data?.message || error.message || "Login failed";
+            setErrorMessage(errorMsg);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
-    const onError = (error: any) => {
-        console.log(error);
-    }
     return (
         <>
+            {isLoading && <LoadingSpinner />}
             <div className="flex min-h-screen flex-col items-center justify-start bg-background px-4">
 
                 <div className="mt-24 mb-8 text-center">
@@ -49,9 +62,15 @@ export default function AuthorizationPage() {
                     </p>
                 </div>
 
+                {errorMessage && (
+                    <div className="w-full max-w-sm mb-4 p-3 bg-destructive/10 text-destructive border border-destructive rounded-md">
+                        {errorMessage}
+                    </div>
+                )}
+
                 <Form {...form}>
                     <form
-                        onSubmit={form.handleSubmit(onSubmit, onError)}
+                        onSubmit={form.handleSubmit(onSubmit)}
                         className="w-full max-w-sm flex flex-col gap-5"
                     >
                         <FormField
@@ -60,7 +79,7 @@ export default function AuthorizationPage() {
                             render={({field}) => (
                                 <FormItem className={""}>
                                     <FormControl>
-                                        <Input {...field} placeholder="Login"/>
+                                        <Input {...field} placeholder="Email" type="email" disabled={isLoading}/>
                                     </FormControl>
                                     <FormMessage/>
                                 </FormItem>
@@ -73,18 +92,18 @@ export default function AuthorizationPage() {
                             render={({field}) => (
                                 <FormItem>
                                     <FormControl>
-                                        <Input type="password" {...field} placeholder="Password"/>
+                                        <Input type="password" {...field} placeholder="Password" disabled={isLoading}/>
                                     </FormControl>
                                     <FormMessage/>
                                 </FormItem>
                             )}
                         />
 
-                        <Button type="submit" className="w-full">
-                            Sign in
+                        <Button type="submit" className="w-full" disabled={isLoading}>
+                            {isLoading ? "Signing in..." : "Sign in"}
                         </Button>
                         <p className="text-center text-sm text-muted-foreground">
-                            Doesn't have account?{' '}
+                            Don't have account?{' '}
                             <Link to="/register" className="text-primary hover:underline">
                                 Sign up
                             </Link>

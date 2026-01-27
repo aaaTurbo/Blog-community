@@ -1,59 +1,92 @@
 import type { Post } from '@/types/PostTypes';
 import { useState } from 'react';
-import { Heart, MessageCircle, Share2 } from 'lucide-react';
+import { Heart, MessageCircle, Share2, MoreVertical, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import CommentSection from './CommentSection';
+import { usePostStore } from '@/store/postStore';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface PostCardProps {
   post: Post;
-  onLike?: (postId: string, reactionType: string) => void;
+  isCurrentUserPost?: boolean;
 }
 
-const reactionEmojis = {
-  like: '👍',
-  love: '❤️',
-  haha: '😂',
-  wow: '😮',
-  sad: '😢',
-  angry: '😠'
-};
-
-export default function PostCard({ post, onLike }: PostCardProps) {
+export default function PostCard({ post, isCurrentUserPost = false }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
-  const [expandedReactions, setExpandedReactions] = useState(false);
+  const { toggleReaction, deletePost, loading } = usePostStore();
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const likeReaction = post.reactions.find(r => r.type === 'like');
-  const totalReactions = post.reactions.reduce((sum, r) => sum + r.count, 0);
-
-  const handleReact = (reactionType: string) => {
-    if (onLike) {
-      onLike(post.id, reactionType);
+  const handleToggleLike = async () => {
+    try {
+      await toggleReaction(post.id);
+    } catch (error) {
+      console.error('Failed to toggle reaction:', error);
     }
   };
 
+  const handleDeletePost = async () => {
+    if (!window.confirm('Вы уверены, что хотите удалить этот пост?')) return;
+    setIsDeleting(true);
+    try {
+      await deletePost(post.id);
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const reactionCount = post.reactionCount || 0;
+
   return (
     <div className="bg-card rounded-lg border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-      {/* Header */}
       <div className="p-4">
-        <div className="flex items-center gap-3">
-          <img
-            src={post.author.avatar}
-            alt={post.author.name}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <div className="flex-1">
-            <p className="font-semibold text-foreground">{post.author.name}</p>
-            <p className="text-xs text-muted-foreground">
-              {new Date(post.createdAt).toLocaleDateString('ru-RU')}
-            </p>
+        <div className="flex items-center gap-3 justify-between">
+          <div className="flex items-center gap-3 flex-1">
+            <img
+              src={post.author?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=User'}
+              alt={post.author?.name || 'User'}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+            <div className="flex-1">
+              <p className="font-semibold text-foreground">{post.author?.name || 'Unknown User'}</p>
+              <p className="text-xs text-muted-foreground">
+                {post.createdAt ? new Date(post.createdAt).toLocaleDateString('ru-RU') : 'Unknown date'}
+              </p>
+            </div>
           </div>
+
+          {isCurrentUserPost && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <MoreVertical size={16} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={handleDeletePost}
+                  disabled={isDeleting}
+                  className="text-destructive cursor-pointer"
+                >
+                  <Trash2 size={14} className="mr-2" />
+                  {isDeleting ? 'Удаление...' : 'Удалить'}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
 
       {/* Content */}
       <div className="px-4 py-2">
-        <p className="text-foreground leading-relaxed">{post.content}</p>
+        <p className="text-foreground leading-relaxed">{post.content || 'No content'}</p>
       </div>
 
       {/* Image */}
@@ -66,20 +99,11 @@ export default function PostCard({ post, onLike }: PostCardProps) {
       )}
 
       {/* Reactions Summary */}
-      {totalReactions > 0 && (
+      {reactionCount > 0 && (
         <div className="px-4 py-2 text-sm text-muted-foreground">
           <div className="flex items-center justify-between">
-            <div
-              className="flex items-center gap-1 cursor-pointer hover:underline"
-              onClick={() => setExpandedReactions(!expandedReactions)}
-            >
-              {post.reactions
-                .filter(r => r.count > 0)
-                .slice(0, 3)
-                .map(r => (
-                  <span key={r.type}>{reactionEmojis[r.type as keyof typeof reactionEmojis]}</span>
-                ))}
-              <span>{totalReactions}</span>
+            <div className="text-xs">
+              👍 {reactionCount} {reactionCount === 1 ? 'лайк' : 'лайков'}
             </div>
             <div className="text-xs">
               {post.commentCount} {post.commentCount === 1 ? 'комментарий' : 'комментариев'}
@@ -96,14 +120,15 @@ export default function PostCard({ post, onLike }: PostCardProps) {
           variant="ghost"
           size="sm"
           className="flex-1 justify-center gap-2 rounded-none hover:bg-muted"
-          onClick={() => handleReact('like')}
+          onClick={handleToggleLike}
+          disabled={loading}
         >
           <Heart
             size={18}
-            fill={likeReaction?.userReacted ? 'currentColor' : 'none'}
-            className={likeReaction?.userReacted ? 'text-red-500' : ''}
+            fill={post.userReacted ? 'currentColor' : 'none'}
+            className={post.userReacted ? 'text-red-500' : ''}
           />
-          <span className="text-sm">Like</span>
+          <span className="text-sm">{post.userReacted ? 'Liked' : 'Like'}</span>
         </Button>
 
         <Button
@@ -130,7 +155,7 @@ export default function PostCard({ post, onLike }: PostCardProps) {
       {showComments && (
         <>
           <Separator />
-          <CommentSection comments={post.comments} postId={post.id} />
+          <CommentSection postId={post.id} />
         </>
       )}
     </div>
