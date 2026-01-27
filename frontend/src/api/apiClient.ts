@@ -21,8 +21,11 @@ api.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             try {
-                useAuthStore.getState().refresh()
-                return api(error.config)
+                const state = useAuthStore.getState();
+                if (state.accessToken && state.refreshToken) {
+                    state.refresh(state.accessToken, state.refreshToken);
+                    return api(error.config);
+                }
             } catch {
                 useAuthStore.getState().logout()
             }

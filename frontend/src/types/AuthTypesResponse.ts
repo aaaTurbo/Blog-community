@@ -1,22 +1,22 @@
 
-type UserResponse = {
+export type UserResponse = {
     username: string
     email: string
 }
 
-type TokenResponse = {
+export type TokenResponse = {
     token: string
     refreshToken: string
     tokenType: string
     expiresAt: number
 }
 
-type AuthRespons = {
+export type AuthResponse = {
     user: UserResponse
     tokens: TokenResponse
 }
 
-type ErrorReponse = {
+export type ErrorResponse = {
     timestamp: string
     status: number
     error: string

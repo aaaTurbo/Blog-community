@@ -7,7 +7,10 @@ import {createRouter} from "@/components/router/Routes.tsx";
 
 function App() {
     useEffect(() => {
-        useAuthStore.getState().refresh()
+        const state = useAuthStore.getState();
+        if (state.accessToken && state.refreshToken) {
+            state.refresh(state.accessToken, state.refreshToken);
+        }
     }, [])
 
     return (

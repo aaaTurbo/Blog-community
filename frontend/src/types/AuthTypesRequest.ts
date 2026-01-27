@@ -1,20 +1,20 @@
 
-type LoginRequest = {
+export type LoginRequest = {
     email: string
     password: string
 }
 
-type RefreshTokenRequest = {
+export type RefreshTokenRequest = {
     refreshToken: string
 }
 
-type RegisterRequest = {
+export type RegisterRequest = {
     email: string
     username: string
     password: string
 }
 
-type UpdateUserRequest = {
+export type UpdateUserRequest = {
     email?: string
     currentPassword?: string
     newPassword?: string

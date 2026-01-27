@@ -1,42 +1,50 @@
 import {createBrowserRouter} from "react-router-dom";
-import {Button} from "@/components/ui/button.tsx";
 import {ProtectedLayout} from "@/layout/ProtectedLayout.tsx";
 import About from "@/pages/About.tsx";
 import AuthorizationPage from "@/pages/AuthorizationPage.tsx";
-import {SpinnerBadge} from "@/components/ui/SpinnerBadge.tsx";
+import {LoadingSpinner} from "@/components/LoadingSpinner.tsx";
 import RegistrationPage from "@/pages/Registration.tsx";
+import FeedPage from "@/pages/FeedPage.tsx";
+import AccountPage from "@/pages/AccountPage.tsx";
 
 export const createRouter = () => {
     return createBrowserRouter([
         {
-            path: "/",
-            element: <Button>Test Theme</Button>,
-            loader: () => {
-                return <SpinnerBadge/>
-            }
-        },
-        {
             path: "/login",
             element: <AuthorizationPage/>,
             loader: () => {
-                return <SpinnerBadge/>
+                return <LoadingSpinner/>
             }
         },
         {
             path: "/register",
             element: <RegistrationPage/>,
             loader: () => {
-                return <SpinnerBadge/>
+                return <LoadingSpinner/>
             }
         },
         {
             Component: ProtectedLayout,
             children: [
                 {
-                    path: "/about",
-                    element: <About></About>,
+                    path: "/",
+                    element: <FeedPage/>,
                     loader: () => {
-                        return <SpinnerBadge/>
+                        return <LoadingSpinner/>
+                    }
+                },
+                {
+                    path: "/account",
+                    element: <AccountPage/>,
+                    loader: () => {
+                        return <LoadingSpinner/>
+                    }
+                },
+                {
+                    path: "/about",
+                    element: <About/>,
+                    loader: () => {
+                        return <LoadingSpinner/>
                     }
                 }
             ]
