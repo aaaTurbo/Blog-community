@@ -1,34 +1,22 @@
 import {ThemeProvider} from "@/components/ThemeProvider"
-import {ModeToggle} from "@/components/ModeToggle.tsx";
-import {Button} from "./components/ui/button";
 import {NuqsAdapter} from 'nuqs/adapters/react-router/v7'
-import {createBrowserRouter, RouterProvider} from "react-router-dom";
-import About from "@/pages/About.tsx";
+import {RouterProvider} from "react-router-dom";
+import {useEffect} from "react";
+import {useAuthStore} from "@/store/authStore.ts";
+import {createRouter} from "@/components/router/Routes.tsx";
 
 function App() {
+    useEffect(() => {
+        const state = useAuthStore.getState();
+        if (state.accessToken && state.refreshToken) {
+            state.refresh(state.accessToken, state.refreshToken);
+        }
+    }, [])
+
     return (
         <NuqsAdapter>
             <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-                <RouterProvider router={
-                    createBrowserRouter([
-                        {
-                            path: "/",
-                            element: <Button>Test Theme</Button>,
-                            loader: () => {
-                                return "testData"
-                            }
-                        },
-                        {
-                            path: "/about",
-                            element: <About></About>,
-                            loader: () => {
-                                return "testData"
-                            }
-                        }
-                    ])
-                }>
-                </RouterProvider>
-                <ModeToggle></ModeToggle>
+                <RouterProvider router={createRouter()}/>
             </ThemeProvider>
         </NuqsAdapter>
     )

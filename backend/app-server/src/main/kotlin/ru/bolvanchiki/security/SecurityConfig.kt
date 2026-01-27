@@ -28,6 +28,7 @@ class SecurityConfig(
             }
             .authorizeHttpRequests { requests ->
                 requests
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/error/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/error/**").permitAll()
                     .anyRequest().authenticated()
@@ -40,6 +41,9 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
+        configuration.allowedOriginPatterns = listOf(
+            "http://localhost:*", "http://frontend:*"
+        )
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
